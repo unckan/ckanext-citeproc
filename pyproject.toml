@@ -38,7 +38,15 @@ where = ["."]
 include = ["ckanext*"]
 
 [tool.setuptools.package-data]
-"ckanext.citeproc" = ["csl_styles/*.csl"]
+"ckanext.citeproc" = [
+    "csl_styles/*.csl",
+    "templates/**/*.html",
+    "assets/*.js",
+    "assets/*.yaml",
+    "i18n/**/*.po",
+    "i18n/**/*.mo",
+    "i18n/**/*.pot",
+]
 
 [tool.extract_messages]
 keywords = "translate isPlural"

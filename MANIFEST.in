@@ -1,1 +1,4 @@
 recursive-include ckanext/citeproc/csl_styles *.csl
+recursive-include ckanext/citeproc/templates *.html
+recursive-include ckanext/citeproc/assets *.js *.yaml
+recursive-include ckanext/citeproc/i18n *.po *.mo *.pot
