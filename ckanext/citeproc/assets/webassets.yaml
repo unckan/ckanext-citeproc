@@ -1,5 +1,5 @@
 citeproc-js:
-  output: ckanext-power-bi/%(version)s_citeproc_modal.js
+  output: ckanext-citeproc/%(version)s_citeproc_modal.js
   extra:
     preload:
       - base/main  # need ckan JS and jQuery
