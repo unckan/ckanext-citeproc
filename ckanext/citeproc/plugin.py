@@ -3,10 +3,12 @@ from datetime import datetime
 import xmltodict
 import shutil
 import subprocess
+import string
 import tempfile
 
 from lxml.etree import tostring
 from citeproc import CitationStylesStyle
+from collections import defaultdict
 from logging import getLogger
 
 import ckan.plugins as plugins
@@ -44,58 +46,99 @@ class CiteProcPlugin(plugins.SingletonPlugin, DefaultTranslation):
 
     # ICiteProcStyles
     def load_citation_styles(self):
-        citation_styles_dir = plugins.toolkit.config.get(
+        """Load citation styles from the configured directory or download them if necessary."""
+        citation_styles_dir = self._get_styles_dir()
+
+        if self._should_download_styles(citation_styles_dir):
+            self._download_citation_styles(citation_styles_dir)
+
+        self._load_local_styles(citation_styles_dir)
+
+    def _get_styles_dir(self) -> str:
+        """Get the directory where citation styles are stored."""
+        """Return the directory for CSL styles, either from config or default path."""
+        # Get citation styles directory from config or use default path
+        return plugins.toolkit.config.get(
             'ckanext.citeproc.citation_styles_path',
             os.path.join(os.path.dirname(__file__), 'csl_styles')
         )
-        # Check if directory exists and has CSL files
-        if not os.path.isdir(citation_styles_dir) or not any(
-            f.endswith('.csl') for f in os.listdir(citation_styles_dir) if os.path.isfile(os.path.join(citation_styles_dir, f))
-        ):
-            log.info('No CSL files found in %s. Downloading styles...', citation_styles_dir)
-            # Ensure the directory exists
-            if not os.path.isdir(citation_styles_dir):
-                os.makedirs(citation_styles_dir)
 
-            # Clone repository to temp dir and copy CSL files
-            with tempfile.TemporaryDirectory() as tmpdirname:
-                try:
-                    subprocess.check_call(
-                        ['git', 'clone', 'https://github.com/citation-style-language/styles.git', tmpdirname]
-                    )
-                    # Copy only .csl files (not the entire git history)
-                    for root, _, files in os.walk(tmpdirname):
-                        for f in files:
-                            if f.endswith('.csl'):
-                                shutil.copy(
-                                    os.path.join(root, f),
-                                    os.path.join(citation_styles_dir, f)
-                                )
-                    log.info('Successfully downloaded CSL files to %s', citation_styles_dir)
-                except (subprocess.SubprocessError, OSError) as e:
-                    log.error('Failed to download CSL files: %s', str(e))
-                    raise RuntimeError(
-                        'Failed to download CSL files. Please check the configuration or manually place CSL files in %s' %
-                        citation_styles_dir
-                    )
-        # Load CSL files from the directory
-        for f in os.listdir(citation_styles_dir):
-            if f.endswith('.csl'):
-                bib_style = CitationStylesStyle(os.path.join(citation_styles_dir, f),
-                                                validate=False)
-                style_info = xmltodict.parse(tostring(bib_style.xml))
-                style_info = style_info.get(
-                    'style', {}).get('info', {}) if style_info else {}
-                self.citation_styles.append({
-                    'type': style_info.get('title'),
-                    'type_acronym': style_info.get('title-short'),
-                    'type_summary': style_info.get('summary'),
-                    'class': bib_style})
-        # Sort citation styles alphabetically by title
+    def _should_download_styles(self, citation_styles_dir: str) -> bool:
+        """Check if citation styles need to be downloaded."""
+        """Check if the citation styles directory is empty or does not exist."""
+
+        # Determine if styles need to be downloaded (nonexistent or empty)
+        return not os.path.isdir(citation_styles_dir) or not any(
+            f.endswith('.csl') for f in os.listdir(citation_styles_dir)
+            if os.path.isfile(os.path.join(citation_styles_dir, f))
+        )
+
+    def _download_citation_styles(self, citation_styles_dir: str):
+        """Download CSL files from the official repository if none exist."""
+
+        log.info('No CSL files found in %s. Downloading styles...', citation_styles_dir)
+        os.makedirs(citation_styles_dir, exist_ok=True)
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            try:
+                subprocess.check_call([
+                    'git', 'clone',
+                    'https://github.com/citation-style-language/styles.git',
+                    tmpdirname
+                ])
+
+                letter_counts = defaultdict(int)
+                seen_files = set()
+
+                for root, _, files in os.walk(tmpdirname):
+                    for f in sorted(files):
+                        if f.endswith('.csl'):
+                            first_char = f[0].lower()
+                            if first_char in string.ascii_lowercase and letter_counts[first_char] < 20:
+                                src = os.path.join(root, f)
+                                dst = os.path.join(citation_styles_dir, f)
+                                if f not in seen_files:
+                                    shutil.copy(src, dst)
+                                    seen_files.add(f)
+                                    letter_counts[first_char] += 1
+
+                log.info('Successfully downloaded and filtered CSL files to %s', citation_styles_dir)
+
+            except (subprocess.SubprocessError, OSError) as e:
+                log.error('Failed to download CSL files: %s', str(e))
+                raise RuntimeError(
+                    f'Failed to download CSL files. Please manually place CSL files in {citation_styles_dir}'
+                )
+
+    def _load_local_styles(self, citation_styles_dir: str):
+        """Load local CSL files from the specified directory."""
+        loaded_styles = set()
+        letter_counts = defaultdict(int)
+
+        for f in sorted(os.listdir(citation_styles_dir)):
+            if f.endswith('.csl') and f not in loaded_styles:
+                first_char = f[0].lower()
+                if first_char in string.ascii_lowercase and letter_counts[first_char] < 20:
+                    try:
+                        bib_style = CitationStylesStyle(os.path.join(citation_styles_dir, f), validate=False)
+                        style_info = xmltodict.parse(tostring(bib_style.xml))
+                        style_info = style_info.get('style', {}).get('info', {}) if style_info else {}
+
+                        self.citation_styles.append({
+                            'type': style_info.get('title'),
+                            'type_acronym': style_info.get('title-short'),
+                            'type_summary': style_info.get('summary'),
+                            'class': bib_style
+                        })
+
+                        loaded_styles.add(f)
+                        letter_counts[first_char] += 1
+
+                    except Exception as e:
+                        log.warning('Error loading style file %s: %s', f, str(e))
+
         self.citation_styles.sort(key=lambda x: x['type'].lower() if x['type'] else '')
-        # Log the number of loaded citation styles
-        log.debug('Loaded %s citation styles from %s' %
-                  (len(self.citation_styles), citation_styles_dir))
+        log.debug('Loaded %s citation styles from %s', len(self.citation_styles), citation_styles_dir)
 
     # ICiteProcMappings
     def update_dataset_citation_map(self, cite_data: DataDict,
