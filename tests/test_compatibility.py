@@ -69,6 +69,7 @@ def test_citation_dates(plugin, name, resource):
     res = {'id': 'resource', 'package_id': 'dataset', 'name': 'Resource',
            'created': '2026-09-24T12:00:00'}
     data = {'id': res['id'] if resource else package['id'], 'format': 'plain'}
+
     def get_action(name):
         return lambda *_: res if name == 'resource_show' else package
     with patch.object(action, 'check_access'), \
