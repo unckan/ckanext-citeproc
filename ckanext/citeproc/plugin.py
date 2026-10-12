@@ -31,6 +31,7 @@ from ckanext.citeproc import helpers
 log = getLogger(__name__)
 
 
+@plugins.toolkit.blanket.config_declarations
 class CiteProcPlugin(plugins.SingletonPlugin, DefaultTranslation):
     plugins.implements(ICiteProcStyles, inherit=True)
     plugins.implements(ICiteProcMappings)
@@ -45,9 +46,9 @@ class CiteProcPlugin(plugins.SingletonPlugin, DefaultTranslation):
     # ICiteProcStyles
     def load_citation_styles(self):
         citation_styles_dir = plugins.toolkit.config.get(
-            'ckanext.citeproc.citation_styles_path',
-            os.path.join(os.path.dirname(__file__), 'csl_styles')
-        )
+            'ckanext.citeproc.citation_styles_path'
+        ) or os.path.join(os.path.dirname(__file__), 'csl_styles')
+        self.citation_styles = []
         # Check if directory exists and has CSL files
         if not os.path.isdir(citation_styles_dir) or not any(
             f.endswith('.csl')
@@ -122,7 +123,7 @@ class CiteProcPlugin(plugins.SingletonPlugin, DefaultTranslation):
                 lang, org_dict['title'])
         created_date = datetime.fromisoformat(pkg_dict['metadata_created'])
         cite_data['issued'] = {
-            'date-parts': [[created_date.year, created_date.month, created_date.month]]
+            'date-parts': [[created_date.year, created_date.month, created_date.day]]
         }
         cite_data['URL'] = plugins.toolkit.h.url_for('%s.read' % pkg_dict['type'],
                                                      _external=True,
@@ -148,7 +149,7 @@ class CiteProcPlugin(plugins.SingletonPlugin, DefaultTranslation):
                 lang, org_dict['title'])
         created_date = datetime.fromisoformat(res_dict['created'])
         cite_data['issued'] = {
-            'date-parts': [[created_date.year, created_date.month, created_date.month]]
+            'date-parts': [[created_date.year, created_date.month, created_date.day]]
         }
         cite_data['URL'] = plugins.toolkit.h.url_for('%s_resource.read' %
                                                      pkg_dict['type'],

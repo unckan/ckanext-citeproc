@@ -107,7 +107,7 @@ def dataset_citation_show(context: Context,
     cite_data = {
         'type': WEBPAGE,
         'accessed': {
-            'date-parts': [[date_now.year, date_now.month, date_now.month]]
+            'date-parts': [[date_now.year, date_now.month, date_now.day]]
         }
     }
     for plugin in PluginImplementations(ICiteProcMappings):
@@ -139,7 +139,7 @@ def resource_citation_show(context: Context,
     cite_data = {
         'type': WEBPAGE,
         'accessed': {
-            'date-parts': [[date_now.year, date_now.month, date_now.month]]
+            'date-parts': [[date_now.year, date_now.month, date_now.day]]
         }
     }
     for plugin in PluginImplementations(ICiteProcMappings):
