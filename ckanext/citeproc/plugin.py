@@ -50,9 +50,12 @@ class CiteProcPlugin(plugins.SingletonPlugin, DefaultTranslation):
         )
         # Check if directory exists and has CSL files
         if not os.path.isdir(citation_styles_dir) or not any(
-            f.endswith('.csl') for f in os.listdir(citation_styles_dir) if os.path.isfile(os.path.join(citation_styles_dir, f))
+            f.endswith('.csl')
+            for f in os.listdir(citation_styles_dir)
+            if os.path.isfile(os.path.join(citation_styles_dir, f))
         ):
-            log.info('No CSL files found in %s. Downloading styles...', citation_styles_dir)
+            log.info('No CSL files found in %s. Downloading styles...',
+                     citation_styles_dir)
             # Ensure the directory exists
             if not os.path.isdir(citation_styles_dir):
                 os.makedirs(citation_styles_dir)
@@ -61,7 +64,9 @@ class CiteProcPlugin(plugins.SingletonPlugin, DefaultTranslation):
             with tempfile.TemporaryDirectory() as tmpdirname:
                 try:
                     subprocess.check_call(
-                        ['git', 'clone', 'https://github.com/citation-style-language/styles.git', tmpdirname]
+                        ['git', 'clone',
+                         'https://github.com/citation-style-language/styles.git',
+                         tmpdirname]
                     )
                     # Copy only .csl files (not the entire git history)
                     for root, _, files in os.walk(tmpdirname):
@@ -71,11 +76,13 @@ class CiteProcPlugin(plugins.SingletonPlugin, DefaultTranslation):
                                     os.path.join(root, f),
                                     os.path.join(citation_styles_dir, f)
                                 )
-                    log.info('Successfully downloaded CSL files to %s', citation_styles_dir)
+                    log.info('Successfully downloaded CSL files to %s',
+                             citation_styles_dir)
                 except (subprocess.SubprocessError, OSError) as e:
                     log.error('Failed to download CSL files: %s', str(e))
                     raise RuntimeError(
-                        'Failed to download CSL files. Please check the configuration or manually place CSL files in %s' %
+                        'Failed to download CSL files. Please check the '
+                        'configuration or manually place CSL files in %s' %
                         citation_styles_dir
                     )
         # Load CSL files from the directory
