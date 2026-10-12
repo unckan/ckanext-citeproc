@@ -1,12 +1,12 @@
 [tool.pyright]
-pythonVersion = "3.9"
+pythonVersion = "3.10"
 include = ["ckanext"]
 exclude = [
     "**/tests",
     "**/migration",
 ]
 extraPaths = [
-  "../../lib/python3.9/site-packages",
+  "../../lib/python3.10/site-packages",
   "../.",
   "../ckan",
 ]

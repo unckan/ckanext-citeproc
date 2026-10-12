@@ -1,0 +1,25 @@
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install CKAN 2.12 and extension
+        run: |
+          pip install 'ckan @ https://github.com/ckan/ckan/archive/refs/tags/ckan-2.12.0.zip' -r https://raw.githubusercontent.com/ckan/ckan/ckan-2.12.0/requirements.txt
+          pip install -e . pytest
+      - name: Run compatibility tests
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+        run: pytest

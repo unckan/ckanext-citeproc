@@ -3,28 +3,31 @@ groups:
   - annotation: ckanext-citeproc settings
     options:
       - key: ckanext.citeproc.citation_styles_path
-        default: None
+        default: null
         description: |
           Specifies the absolute path on the server to the directory containing the CSL files.
           The available citation formats will be built from any CSL files in this directory.
           See: https://github.com/citation-style-language/styles
         example: /path/to/csl/styles/directory/
-        required: true
-      - key: ckanext.citeproc.dataset_citations
+        required: false
+      - key: ckanext.citeproc.dataset_show_citations
         default: true
         type: bool
         description: |
-          Whether ot not to show citations for datasets of a certain dataset type.
+          Whether or not to show citations for datasets of a certain dataset type.
           Such as ckanext.citeproc.<package type>_show_citations
         example: false
         validators: ignore_missing
         required: false
-      - key: ckanext.citeproc.dataset_resource_citations
+      - key: ckanext.citeproc.dataset_resource_show_citations
         default: true
         type: bool
         description: |
-          Whether ot not to show citations for resources of a certain dataset type.
+          Whether or not to show citations for resources of a certain dataset type.
           Such as ckanext.citeproc.<package type>_resource_show_citations
         example: false
         validators: ignore_missing
         required: false
+      - key: ckanext.citeproc.<PACKAGE_TYPE>_show_citations
+        type: dynamic
+        description: Controls citations for custom dataset types and their resources.

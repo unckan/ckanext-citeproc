@@ -4,22 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ckanext-citeproc"
-version = "1.0.3"
+version = "1.1.0"
 description = "CKAN extension for CSL citations"
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
 authors = [
   { name = "German Kay", email = "germankay@gmail.com" }
 ]
-requires-python = ">=3.7"
-dependencies = []
+requires-python = ">=3.10"
+dependencies = ["citeproc-py==0.7.0", "xmltodict==0.14.2"]
 classifiers = [
   "Development Status :: 4 - Beta",
   "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10"
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12"
 ]
 keywords = ["CKAN", "CSL", "Citations", "Citeproc"]
 
@@ -39,6 +38,7 @@ include = ["ckanext*"]
 
 [tool.setuptools.package-data]
 "ckanext.citeproc" = [
+    "config_declaration.yaml",
     "csl_styles/*.csl",
     "templates/**/*.html",
     "assets/*.js",
@@ -77,7 +77,7 @@ filterwarnings = [
   "ignore::sqlalchemy.exc.SAWarning",
   "ignore::DeprecationWarning"
 ]
-addopts = "--ckan-ini=test.ini"
+testpaths = ["tests"]
 
 [tool.flake8]
 max-complexity = 100
