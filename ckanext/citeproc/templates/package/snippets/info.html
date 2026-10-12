@@ -3,7 +3,6 @@
 {% block follow_button %}
   {{ super() }}
   {% if h.show_citations_for(pkg.type or 'dataset') %}
-    <br/><br/>
-    {% snippet "snippets/citeproc_button.html", pkg_dict=pkg %}
+    {% snippet "snippets/citeproc_button.html", pkg_dict=pkg, spacer=true %}
   {% endif %}
 {% endblock %}

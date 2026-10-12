@@ -3,9 +3,7 @@
 {% block resource_actions_inner %}
   {{ super() }}
   {% if h.show_citations_for((pkg.type or 'dataset') ~ '_resource') %}
-    <li>
-      {% snippet "snippets/citeproc_button.html", res_dict=res %}
-    </li>
+    {% snippet "snippets/citeproc_button.html", res_dict=res, list=true %}
   {% endif %}
 {% endblock %}
 
@@ -19,6 +17,7 @@
 {%- block scripts %}
   {{ super() }}
   {% if h.show_citations_for((pkg.type or 'dataset') ~ '_resource') %}
+    {% asset 'ckanext-citeproc/citeproc-css' %}
     {% asset 'ckanext-citeproc/citeproc-js' %}
   {% endif %}
 {% endblock -%}

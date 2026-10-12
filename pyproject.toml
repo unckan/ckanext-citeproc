@@ -42,6 +42,7 @@ include = ["ckanext*"]
     "csl_styles/*.csl",
     "templates/**/*.html",
     "assets/*.js",
+    "assets/*.css",
     "assets/*.yaml",
     "i18n/**/*.po",
     "i18n/**/*.mo",

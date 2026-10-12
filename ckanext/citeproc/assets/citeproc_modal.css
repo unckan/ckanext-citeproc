@@ -1,0 +1,20 @@
+#citeproc-accordion .citeproc-citation-wrapper{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+#citeproc-accordion .citeproc-copy-bttn{
+  border-radius: 0 4px 4px 0  !important;
+  line-height: 1 !important;
+  padding: 11px !important;
+}
+
+#citeproc-accordion .citeproc-citation-content{
+  margin-bottom: 0!important;
+  border-radius: 4px 0 0 4px  !important;
+  height: 100%;
+  line-height: 1 !important;
+  padding: 11px !important;
+}

@@ -5,3 +5,8 @@ citeproc-js:
       - base/main  # need ckan JS and jQuery
   contents:
     - citeproc_modal.js
+
+citeproc-css:
+  output: ckanext-citeproc/%(version)s_citeproc_modal.css
+  contents:
+    - citeproc_modal.css

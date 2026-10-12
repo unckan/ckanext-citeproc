@@ -10,6 +10,7 @@
 {%- block scripts %}
   {{ super() }}
   {% if h.show_citations_for(pkg.type or 'dataset') %}
+    {% asset 'ckanext-citeproc/citeproc-css' %}
     {% asset 'ckanext-citeproc/citeproc-js' %}
   {% endif %}
 {% endblock -%}

@@ -17,12 +17,12 @@ this.ckan.module('citeproc-modal', function($){
         html += '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-citeproc-' + index + '" aria-expanded="false" aria-controls="collapse-citeproc-' + index + '">' + title + '</button>';
         html += '</h2>';
         html += '<div id="collapse-citeproc-' + index + '" class="accordion-collapse collapse" aria-labelledby="collapse-citeproc-' + index + '" data-bs-parent="#citeproc-accordion">';
-        html += '<div class="accordion-body">';
+        html += '<div class="accordion-body"><div class="citeproc-citation-wrapper">';
+        html += '<pre class="citeproc-citation-content">' + citation.citation + '</pre>';
         if( navigator.clipboard ){
-          html += '<button style="margin-left:20px" title="' + _("Copy to clipboard") + '" aria-label="' + _("Copy to clipboard") + '" class="btn btn-secondary float-right float-end"><i aria-hidden="true" class="far fa-copy"></i></button>';
+          html += '<button class="btn btn-secondary citeproc-copy-bttn" title="' + _("Copy to clipboard") + '" aria-label="' + _("Copy to clipboard") + '" class="btn btn-secondary float-right float-end"><i aria-hidden="true" class="far fa-copy"></i></button>';
         }
-        html += '<pre style="padding-bottom:20px;">' + citation.citation + '</pre>';
-        html += '</div></div></div>';
+        html += '</div></div></div></div>';
         return html;
       }
 
