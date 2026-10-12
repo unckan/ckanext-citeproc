@@ -1,8 +1,11 @@
 {#
 Adds a button to open the citeproc modal for citations.
 
-res_dict - Resource data dict.
-pkg_dict - Dataset data dict.
+res_dict    - Resource data dict.
+pkg_dict    - Dataset data dict.
+list        - bool, should wrap in li node or not
+list_class  - str, className for the li element
+spacer      - bool, should have some br spacers before button group
 
 Example:
 
@@ -13,10 +16,16 @@ Example:
 {% set object_type = 'resource' if res_dict else 'dataset' %}
 {% set ajax_uri = h.url_for('api.action', ver=3, logic_function=object_type ~ '_citation_show', id=object_id, format='html') %}
 {% set button_text = _('Cite this') ~ ' ' ~ (_('dataset') if pkg_dict else _('resource')) %}
-<div class="btn-group">
-  <div data-module="citeproc-modal" data-module-ajax_uri="{{ ajax_uri }}">
-    <div class="citeproc-wrapper">
-      <a class="btn btn-secondary" href="javascript:void(0);" data-toggle="modal" data-target="#citeproc-modal" data-bs-toggle="modal" data-bs-target="#citeproc-modal"><i class="fas fa-quote-right" aria-hidden="true"></i>&nbsp;{{ button_text }}</a>
+
+{% block citeproc_button %}
+  {% if list %}<li {% if list_class %}class="{{- list_class -}}"{% endif %}>{% endif %}
+  {% if spacer %}<br/><br/>{% endif %}
+  <div class="btn-group">
+    <div data-module="citeproc-modal" data-module-ajax_uri="{{ ajax_uri }}">
+      <div class="citeproc-wrapper">
+        <a class="btn btn-secondary" href="javascript:void(0);" data-toggle="modal" data-target="#citeproc-modal" data-bs-toggle="modal" data-bs-target="#citeproc-modal"><i class="fas fa-quote-right" aria-hidden="true"></i>&nbsp;{{ button_text }}</a>
+      </div>
     </div>
   </div>
-</div>
+  {% if list %}</li>{% endif %}
+{% endblock %}

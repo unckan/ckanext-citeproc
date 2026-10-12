@@ -1,0 +1,3 @@
+Synchronize upstream citation templates and CSS while preserving fork changes.
+Resolve the asset manifest rename and include CSS in distribution packages.
+Repair CI dependency installation, lint configuration and changelog checks.

@@ -42,6 +42,7 @@ include = ["ckanext*"]
     "csl_styles/*.csl",
     "templates/**/*.html",
     "assets/*.js",
+    "assets/*.css",
     "assets/*.yaml",
     "i18n/**/*.po",
     "i18n/**/*.mo",
@@ -84,3 +85,8 @@ max-line-length = 88
 count = true
 exit-zero = true
 statistics = true
+
+[tool.pyright]
+pythonVersion = "3.10"
+include = ["ckanext"]
+exclude = ["**/tests", "**/migration"]
